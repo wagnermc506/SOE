@@ -11,19 +11,20 @@ picam2.configure(camera_config)
 picam2.start()
 
 while True:
-    image = picam2.capture_file("tmp.jpg")
+    picam2.capture_file("tmp.jpg")
     
     try:
         result = DeepFace.find(img_path="tmp.jpg", db_path="known")
         result_stripped_list = str(result).split()
-        #pprint(result_stripped_list)
+        pprint(result_stripped_list)
         print("\nrecognition: {" + result_stripped_list[8] + "}\n")
             
     except ValueError:
         pass
 
-    time.sleep(2)
+    time.sleep(1)
 
+    #image = picam2.capture_array()
     #cv2.imshow("Video", image)
     
     #if cv2.waitKey(1) & 0xFF == ord('q'):
