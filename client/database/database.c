@@ -54,7 +54,7 @@ void save_data(char* path, void* buffer, size_t size_buffer, enum soe_data_type 
 void load_data(char* path, void* buffer, size_t size_buffer, enum soe_data_type dt) {
     char* full_path = handle_path(path, dt);
 
-    FILE* fd = fopen(path, "rb");
+    FILE* fd = fopen(full_path, "rb");
     fread(buffer, size_buffer, 1, fd);
     fclose(fd);
 

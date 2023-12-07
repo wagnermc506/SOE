@@ -56,7 +56,7 @@ void child_process() {
     while ((dup2(pipefd[1], STDOUT_FILENO) == -1) && (errno == EINTR)) {}
     close(pipefd[1]);
     close(pipefd[0]);
-    execl("/usr/bin/python", "/usr/bin/python", "/home/frostwagner/Documents/soe/image.py", (char*)NULL);
+    execl("/usr/bin/python", "/usr/bin/python", "/home/frostwagner/Documents/SOE2/client/recognition/image.py", (char*)NULL);
     perror("execl");
     _exit(1);
 }
@@ -68,7 +68,7 @@ void filter_logs() {
     char buffer[4096];
 	char msg[4096];
 
-    int comp_result = regcomp(&re, "recognition: {.*}", 0);
+    int comp_result = regcomp(&re, "{\"recognition\": \".*\"}", 0);
 	if (comp_result != 0) {
 		perror("regcomp");
 	}
@@ -84,9 +84,9 @@ void filter_logs() {
 				exit(1);
 			}
 		}
-		else if (count == 0) {
-			break;
-		}
+		//else if (count == 0) {
+		//	break;
+		//}
 		else {
 			int ismatch = regexec(&re, buffer, 1, &match, 0);
 			if (ismatch == 0) {
@@ -94,7 +94,7 @@ void filter_logs() {
 				memset(msg, 0, 4096);
 				strncpy(msg, &buffer[match.rm_so], n);
 				printf("%s", msg);
-				save_recognized_user(msg);
+				//save_recognized_user(msg);
 			}
 		}
 	}
@@ -124,10 +124,12 @@ int run_recognition() {
 
     filter_logs();
 
+	printf("SAI\n");
+
 	close(pipefd[0]);
 	wait(0);
 
     signal(SIGINT, SIG_DFL);
-
+	exit(0);
 	return 0;
 }
