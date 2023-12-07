@@ -20,6 +20,7 @@ typedef struct USUARIO_DATA {
     char nome[150];
     int matricula;
     char cpf[12];
+    char autenticado;
 } USUARIO_DATA;
 
 USUARIO_DATA* model_create_usuario_data();

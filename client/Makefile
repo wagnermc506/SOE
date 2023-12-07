@@ -1,4 +1,4 @@
-srcs = api_consumer/*.c database/*.c models/*.c
+srcs = api_consumer/*.c database/*.c models/*.c config/*.c recognition/*.c
 
 all: sync service
 
