@@ -1,6 +1,6 @@
 import enum
 from database import Base
-from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, Text, UUID, DATETIME, ForeignKey, Enum, DATE
+from sqlalchemy import Column, Integer, String, TIMESTAMP, Boolean, Text, UUID, DATETIME, ForeignKey, Enum, DATE, BLOB
 
 class Usuario(Base):
     __tablename__ = "usuario"
@@ -9,11 +9,13 @@ class Usuario(Base):
     nome = Column(String(40), nullable=False)
     matricula = Column(Integer, nullable=True)
     data_nascimento = Column(DATE, nullable=True)
-    caminho_foto = Column(String(100), nullable=True)
+    # caminho_foto = Column(String(100), nullable=True)
 
-class StatusProva(enum.Enum):
-    marcada = 1
-    finalizada = 2
+class UsuarioFoto(Base):
+    __tablename__ = "usuario_foto"
+
+    usuario = Column(ForeignKey("usuario.cpf"), primary_key=True, nullable=False)
+    foto = Column(BLOB, nullable=False)
 
 class Prova(Base):
     __tablename__ = "prova"
@@ -22,7 +24,7 @@ class Prova(Base):
     local_aplicacao = Column(String, nullable=False)
     horario_inicio = Column(TIMESTAMP, nullable=False)
     horario_fim = Column(TIMESTAMP, nullable=False)
-    status = Column(Enum(StatusProva), default='marcada')
+    status = Column(String(12), default='marcada')
 
 class UsuarioProva(Base):
     __tablename__ = "usuario_prova"
@@ -31,4 +33,4 @@ class UsuarioProva(Base):
     usuario = Column(ForeignKey("usuario.cpf"), nullable=False)
     prova = Column(ForeignKey("prova.id"), nullable=False)
     autenticacao = Column(Boolean, nullable=False, default=False)
-    presente = Column(Boolean, nullable=False, default=False)
+    # presente = Column(Boolean, nullable=False, default=False)

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, UploadFile, Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import models
@@ -27,13 +27,9 @@ class Prova(BaseModel):
     local_aplicacao: str
     horario_inicio: datetime
     horario_fim: datetime
-    status: str = models.StatusProva.marcada
 
     class Config:
         orm_mode = True
-
-class Picture(BaseModel):
-    caminho_foto: str
 
 class UserPresent(BaseModel):
     cpf: str
@@ -64,12 +60,21 @@ def create_user(user: User, db: Session = Depends(get_db)):
 
     return [new_user]
 
-@app.post("/usuario/{cpf}/adicionarfoto")
-def add_photo(cpf: str, pic: Picture, db: Session = Depends(get_db)):
-    user = db.query(models.Usuario).filter_by(cpf = cpf)
-    user.update({"caminho_foto": pic.caminho_foto})
+@app.post("/usuario/{cpf}/foto")
+def add_photo(cpf: str, file: UploadFile, db: Session = Depends(get_db)):
+    user = db.query(models.Usuario).filter_by(cpf = cpf).first()
+    user_photo = models.UsuarioFoto()
+    user_photo.usuario = user.cpf
+    user_photo.foto = file.file.read()
+    db.add(user_photo)
     db.commit()
-    return user.first()
+
+    return {"filename": file.filename}
+
+@app.get("/usuario/{cpf}/foto")
+def get_photo(cpf: str, db: Session = Depends(get_db)):
+    user_photo = db.query(models.UsuarioFoto).filter_by(usuario = cpf).first()
+    return Response(content=user_photo.foto, media_type="image/jpeg")
 
 @app.get("/usuario/{cpf}")
 def get_user(cpf: str, db: Session = Depends(get_db)):
@@ -96,7 +101,7 @@ def update_user(cpf: str, user: User, db: Session = Depends(get_db)):
 
 @app.post("/prova")
 def create_exam(prova: Prova, db: Session = Depends(get_db)):
-    prova.status = models.StatusProva["marcada"]
+    # prova.status = models.StatusProva["marcada"]
     
     new_exam = models.Prova(**prova.dict())
     new_exam.id = str(uuid4())

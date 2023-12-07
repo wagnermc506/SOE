@@ -1,0 +1,12 @@
+[Unit]
+Description=Daemon para a realização de provas
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/camera_daemon
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target
