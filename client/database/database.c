@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "database.h"
 #include "../config/config.h"
@@ -41,6 +42,16 @@ void free_path(char* path, enum soe_data_type dt) {
     }
 }
 
+int file_exists(char* path) {
+    struct stat st;
+    if (stat(path, &st) == 0) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 void save_data(char* path, void* buffer, size_t size_buffer, enum soe_data_type dt) {
     char* full_path = handle_path(path, dt);
 
@@ -53,6 +64,11 @@ void save_data(char* path, void* buffer, size_t size_buffer, enum soe_data_type 
 
 void load_data(char* path, void* buffer, size_t size_buffer, enum soe_data_type dt) {
     char* full_path = handle_path(path, dt);
+
+    if (!file_exists(path)) {
+        memset(buffer, 0, size_buffer);
+        return;
+    }
 
     FILE* fd = fopen(full_path, "rb");
     fread(buffer, size_buffer, 1, fd);

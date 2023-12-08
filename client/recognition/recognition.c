@@ -39,7 +39,14 @@ void save_recognized_user(char* buffer) {
 	USUARIO_DATA* user_data = model_create_usuario_data();
 	load_data(user_path, user_data, sizeof(USUARIO_DATA), USUARIO);
 
+	if (strlen(user_data->cpf) == 0) {
+		model_free_usuario_data(user_data);
+		cJSON_Delete(user_json);
+		return;
+	}
+
 	user_data->autenticado = 1;
+	get_timestamp_now(user_data->autenticated_time);
 	save_data(user_path, user_data, sizeof(USUARIO_DATA), USUARIO);
 
 	model_free_usuario_data(user_data);
@@ -94,7 +101,7 @@ void filter_logs() {
 				memset(msg, 0, 4096);
 				strncpy(msg, &buffer[match.rm_so], n);
 				printf("%s", msg);
-				//save_recognized_user(msg);
+				save_recognized_user(msg);
 			}
 		}
 	}
@@ -123,8 +130,6 @@ int run_recognition() {
     close(pipefd[1]);
 
     filter_logs();
-
-	printf("SAI\n");
 
 	close(pipefd[0]);
 	wait(0);

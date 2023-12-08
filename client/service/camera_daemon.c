@@ -10,6 +10,7 @@
 #include "../models/models.h"
 #include "../database/database.h"
 #include "../recognition/recognition.h"
+#include "../config/config.h"
 
 #define TRUE  1
 #define FALSE 0
@@ -47,6 +48,11 @@ void stop_running_recognition() {
 }
 
 int main() {
+
+    if (verify_envs() != 0) {
+        printf("Env variable 'INTERNAL_DATABASE_PATH_DIR' not found\n");
+        return 2;
+    }
 
     PROVA_DATA* prova = model_create_prova_data();
     time_t current_time, prova_inicio, prova_fim;

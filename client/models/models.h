@@ -2,6 +2,9 @@
 #define _MODELS_H_
 
 #include <cjson/cJSON.h>
+#include <unistd.h>
+#include <string.h>
+#include <time.h>
 
 typedef struct PROVA_DATA {
     char id[37];
@@ -21,6 +24,7 @@ typedef struct USUARIO_DATA {
     int matricula;
     char cpf[12];
     char autenticado;
+    char autenticated_time[20];
 } USUARIO_DATA;
 
 USUARIO_DATA* model_create_usuario_data();
@@ -31,5 +35,17 @@ void model_free_usuario_data(USUARIO_DATA*);
 static inline int get_list_size(cJSON* json) {
     return cJSON_GetArraySize(json);
 }
+
+#define TIME_FORMAT "%Y-%m-%d %H:%M:%S"
+static inline void get_timestamp_now(char* buffer) {
+    time_t current_time;
+    time(&current_time);
+
+    struct tm current;
+    localtime(&current_time);
+
+    strftime(buffer, 20, TIME_FORMAT, &current);
+}
+#undef TIME_FORMAT
 
 #endif
